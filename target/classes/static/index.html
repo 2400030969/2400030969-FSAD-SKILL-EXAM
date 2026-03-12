@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shipments</title>
+    <script>
+        async function loadShipments() {
+            let res = await fetch('/shipments');
+            let data = await res.json();
+            let list = document.getElementById('list');
+            list.innerHTML = '';
+            data.forEach(s => {
+                let li = document.createElement('li');
+                li.textContent = `#${s.shipmentId}: ${s.description}`;
+                list.appendChild(li);
+            });
+        }
+        async function addShipment(e) {
+            e.preventDefault();
+            let desc = document.getElementById('description').value;
+            await fetch('/shipments', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({description: desc})
+            });
+            document.getElementById('description').value='';
+            loadShipments();
+        }
+        window.onload = loadShipments;
+    </script>
+</head>
+<body>
+<h1>Shipments</h1>
+<ul id="list"></ul>
+<form onsubmit="addShipment(event)">
+    <input id="description" placeholder="Description" required />
+    <button type="submit">Add</button>
+</form>
+</body>
+</html>
